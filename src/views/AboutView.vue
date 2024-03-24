@@ -1,12 +1,11 @@
 <template>
-  <div>
-    Home
-  </div>
+    <div>
+        About
+    </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
-  
+
 </script>
 
 <style scoped>
