@@ -8,12 +8,11 @@
 
 <script setup lang="ts">
     import { RouterLink } from 'vue-router';
+    import router from '@/router';
 
-    const routes = [
-        'home',
-        'about',
-        'protected',
-    ]
+    const routes = router.getRoutes().map((element) => element.name)
+
+   
 </script>
 
 <style scoped>

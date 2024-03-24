@@ -86,7 +86,9 @@ export class RouterAuthorization {
     next: NavigationGuardNext
   ): void {
     const { action, subject } = to.meta as RouteMeta;
-
+    /*console.log(action);
+    console.log(subject);
+    console.log(to);*/
     if (
       to.name === this.config.unauthorizedRoute ||
       to.path === this.config.unauthorizedRoute

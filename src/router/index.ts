@@ -80,7 +80,7 @@ function generateAuthorizedRoutes(
 }
 // Ejemplo de uso
 const authorizedRoutes = generateAuthorizedRoutes(routes, permissions);
-console.log(authorizedRoutes);
+//console.log(authorizedRoutes);
 
 const routerConfig: RouterConfig = {
   routes: authorizedRoutes,
