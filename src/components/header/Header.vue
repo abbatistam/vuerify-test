@@ -1,20 +1,36 @@
 <template>
     <div class="flex justify-between">
-        <RouterLink v-for="route in routes" :to="{name: route}">
-            {{ route }}
-        </RouterLink>
+      <div class="cursor-pointer" v-for="(route,index) in routeNames" :key="index" @click="handleNavigate(route.path)">
+        {{ route.name }}
+      </div>
     </div>
-</template>
+  </template>
+  
+  <script setup lang="ts">
+  import router from '@/router';
+  
+  const routeNames = [
+    {
+      name: 'home',
+      path: '/'
+    },
+    {
+      name: 'about',
+      path: '/about'
+    },
+    {
+      name: 'protected',
+      path: '/protected'
+    }
+  ]
 
-<script setup lang="ts">
-    import { RouterLink } from 'vue-router';
-    import router from '@/router';
+  const handleNavigate = (path: string) => {
+    router.push(path)
+  }
 
-    const routes = router.getRoutes().map((element) => element.name)
-
-   
 </script>
-
-<style scoped>
-
-</style>
+  
+  <style scoped>
+  /* Estilos si es necesario */
+  </style>
+  

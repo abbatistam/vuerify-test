@@ -13,7 +13,7 @@ import type { Rule } from "casl";
 
 const permissions: Rule[] = [
   {
-    actions: "view",
+    actions: "edit",
     subject: "about",
   },
   {
@@ -53,10 +53,10 @@ const routes: Route[] = [
   },
 ];
 
-function generateAuthorizedRoutes(
+const generateAuthorizedRoutes = (
   routes: Route[],
   permissions: Rule[]
-): Route[] {
+): Route[] => {
   return routes.filter((route) => {
     const { meta } = route;
 
@@ -78,6 +78,27 @@ function generateAuthorizedRoutes(
     });
   });
 }
+
+// Función que simula una llamada a una API para obtener los permisos
+const getPermissions = async () => {
+  return new Promise<Rule[]>((resolve) => {
+    // Simulación de retardo de 1 segundo para obtener los permisos
+    setTimeout(() => {
+      const permissions: Rule[] = [
+        {
+          actions: "view",
+          subject: "about",
+        },
+        {
+          actions: "view",
+          subject: "protected",
+        },
+      ];
+      resolve(permissions);
+    }, 1000); // 1 segundo de retardo para simular la llamada a la API
+  });
+};
+
 // Ejemplo de uso
 const authorizedRoutes = generateAuthorizedRoutes(routes, permissions);
 //console.log(authorizedRoutes);
@@ -89,6 +110,21 @@ const routerConfig: RouterConfig = {
 };
 
 const routerAuth = new RouterAuthorization(routerConfig);
-const router = routerAuth.getRouter();
+let router = routerAuth.getRouter();
+
+//console.log(router.getRoutes())
+
+export const getApiPermissions = async () => {
+  const permissionsApi = await getPermissions()
+  const newAutorizedRoutes = generateAuthorizedRoutes(routes,permissionsApi)
+  routerAuth.updateConfig({
+    routes: newAutorizedRoutes,
+    permissions: permissionsApi,
+    unauthorizedRoute: "/nonav"
+  })
+  //(routerAuth.getRouter().getRoutes())
+  router = routerAuth.getRouter()
+  //console.log(router.getRoutes())
+}
 
 export default router;
