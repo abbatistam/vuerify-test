@@ -5,11 +5,14 @@ import {
   RouterAuthorization,
   type RouterConfig,
   type RouteMeta,
+  generateAuthorizedRoutes,
 } from "./vuerify";
 import AboutView from "@/views/AboutView.vue";
 import ProtectedView from "@/views/ProtectedView.vue";
 import Nonav from "@/views/Nonav.vue";
+import NotFoundView from "@/views/NotFoundView.vue";
 import type { Rule } from "casl";
+import ChildView from "@/views/ChildView.vue";
 
 const permissions: Rule[] = [
   {
@@ -19,6 +22,18 @@ const permissions: Rule[] = [
   {
     actions: "edit",
     subject: "protected",
+  },
+  {
+    actions: "view",
+    subject: "child1",
+  },
+  {
+    actions: "view",
+    subject: "child2",
+  },
+  {
+    actions: "edit",
+    subject: "child3",
   },
 ];
 
@@ -51,33 +66,91 @@ const routes: Route[] = [
     path: "/nonav",
     component: Nonav,
   },
+  {
+    name: "child",
+    path: "/child",
+    component: ChildView,
+    children: [
+      {
+        name: "child1",
+        path: "/child1",
+        component: ChildView,
+        meta: {
+          subject: "child1",
+          action: "view",
+        },
+      },
+      {
+        name: "child2",
+        path: "/child2",
+        component: ChildView,
+        meta: {
+          subject: "child2",
+          action: "view",
+        },
+      },
+      {
+        name: "child3",
+        path: "/child3",
+        component: ChildView,
+        meta: {
+          subject: "child3",
+          action: "view",
+        },
+      },
+    ],
+  },
+  {
+    path: "/:catchAll(.*)*",
+    name: "not-found",
+    component: NotFoundView, // Replace with your 404 component
+  },
 ];
-
+/*
 const generateAuthorizedRoutes = (
   routes: Route[],
   permissions: Rule[]
 ): Route[] => {
-  return routes.filter((route) => {
-    const { meta } = route;
+  const authorizedRoutes: Route[] = [];
 
-    if (!meta || typeof meta !== "object") {
-      return true; // La ruta no tiene meta o no es un objeto, se incluye
-    }
+  const traverseRoutes = (routes: Route[]): Route[] => {
+    const authorized: Route[] = [];
 
-    const { subject, action } = meta as RouteMeta;
+    routes.forEach((route) => {
+      const { meta, children } = route;
 
-    if (!subject || !action) {
-      return true; // La ruta no tiene subject o action, se incluye
-    }
+      // Verificar si la ruta tiene meta y permiso
+      if (meta && typeof meta === "object") {
+        const { subject, action } = meta as RouteMeta;
+        const hasPermission = permissions.some(
+          (permission) =>
+            permission.subject === subject &&
+            action !== undefined &&
+            permission.actions.includes(action)
+        );
 
-    // Verificar si hay algún permiso que coincida con la ruta
-    return permissions.some((permission) => {
-      return (
-        permission.subject === subject && permission.actions.includes(action)
-      );
+        if (!hasPermission) {
+          return; // Saltar esta ruta si no tiene permiso
+        }
+      }
+
+      // Agregar la ruta autorizada
+      const authorizedRoute: Route = { ...route, children: [] };
+      authorized.push(authorizedRoute);
+
+      // Recursivamente agregar las rutas hijas autorizadas
+      if (children && children.length > 0) {
+        const authorizedChildren = traverseRoutes(children);
+        authorizedRoute.children!.push(...authorizedChildren);
+      }
     });
-  });
-}
+
+    return authorized;
+  };
+
+  authorizedRoutes.push(...traverseRoutes(routes));
+  return authorizedRoutes;
+};*/
 
 // Función que simula una llamada a una API para obtener los permisos
 const getPermissions = async () => {
@@ -115,16 +188,16 @@ let router = routerAuth.getRouter();
 //console.log(router.getRoutes())
 
 export const getApiPermissions = async () => {
-  const permissionsApi = await getPermissions()
-  const newAutorizedRoutes = generateAuthorizedRoutes(routes,permissionsApi)
+  const permissionsApi = await getPermissions();
+  const newAutorizedRoutes = generateAuthorizedRoutes(routes, permissionsApi);
   routerAuth.updateConfig({
     routes: newAutorizedRoutes,
     permissions: permissionsApi,
-    unauthorizedRoute: "/nonav"
-  })
+    unauthorizedRoute: "/nonav",
+  });
   //(routerAuth.getRouter().getRoutes())
-  router = routerAuth.getRouter()
+  router = routerAuth.getRouter();
   //console.log(router.getRoutes())
-}
+};
 
 export default router;

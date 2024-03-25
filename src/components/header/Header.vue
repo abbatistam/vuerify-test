@@ -19,6 +19,10 @@
       path: '/about'
     },
     {
+      name: 'child',
+      path: '/child'
+    },
+    {
       name: 'protected',
       path: '/protected'
     }
