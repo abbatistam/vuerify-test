@@ -6,6 +6,7 @@ import {
   type RouteLocationNormalized,
   type Router,
   type RouteRecordRaw,
+  createWebHashHistory,
 } from "vue-router";
 import { Ability, type Rule } from "casl";
 
@@ -24,10 +25,13 @@ export interface Route {
   meta?: RouteMeta;
 }
 
+export type RouterHistoryType = "history" | "hash";
+
 export interface RouterConfig {
   routes: Route[];
   permissions: Rule[];
   unauthorizedRoute?: string;
+  historyMode?: RouterHistoryType;
 }
 
 export class RouterAuthorization {
@@ -43,8 +47,12 @@ export class RouterAuthorization {
     this.config = config;
     this.ability = new Ability(config.permissions);
 
+    const historyMode = config.historyMode || "history";
+    const history =
+      historyMode === "hash" ? createWebHashHistory() : createWebHistory();
+
     this.router = createRouter({
-      history: createWebHistory(),
+      history,
       routes: config.routes.map((route: Route) => {
         const routeRecord: RouteRecordRaw = route as RouteRecordRaw;
         routeRecord.meta = route.meta as RouteMeta;

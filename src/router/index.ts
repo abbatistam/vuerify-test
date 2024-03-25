@@ -106,51 +106,6 @@ const routes: Route[] = [
     component: NotFoundView, // Replace with your 404 component
   },
 ];
-/*
-const generateAuthorizedRoutes = (
-  routes: Route[],
-  permissions: Rule[]
-): Route[] => {
-  const authorizedRoutes: Route[] = [];
-
-  const traverseRoutes = (routes: Route[]): Route[] => {
-    const authorized: Route[] = [];
-
-    routes.forEach((route) => {
-      const { meta, children } = route;
-
-      // Verificar si la ruta tiene meta y permiso
-      if (meta && typeof meta === "object") {
-        const { subject, action } = meta as RouteMeta;
-        const hasPermission = permissions.some(
-          (permission) =>
-            permission.subject === subject &&
-            action !== undefined &&
-            permission.actions.includes(action)
-        );
-
-        if (!hasPermission) {
-          return; // Saltar esta ruta si no tiene permiso
-        }
-      }
-
-      // Agregar la ruta autorizada
-      const authorizedRoute: Route = { ...route, children: [] };
-      authorized.push(authorizedRoute);
-
-      // Recursivamente agregar las rutas hijas autorizadas
-      if (children && children.length > 0) {
-        const authorizedChildren = traverseRoutes(children);
-        authorizedRoute.children!.push(...authorizedChildren);
-      }
-    });
-
-    return authorized;
-  };
-
-  authorizedRoutes.push(...traverseRoutes(routes));
-  return authorizedRoutes;
-};*/
 
 // Función que simula una llamada a una API para obtener los permisos
 const getPermissions = async () => {
